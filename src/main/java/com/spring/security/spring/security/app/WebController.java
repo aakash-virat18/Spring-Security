@@ -10,4 +10,16 @@ public class WebController {
     {
         return "Hello World !";
     }
+
+    @RequestMapping("/user")
+    public String greetUser()
+    {
+        return "Hello User !";
+    }
+
+    @RequestMapping("/admin")
+    public String greetAdmin()
+    {
+        return "Hello Admin !";
+    }
 }
