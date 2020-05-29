@@ -1,5 +1,6 @@
 package com.spring.security.spring.security.app;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,33 +11,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
 public class WebConfigurationManager extends WebSecurityConfigurerAdapter {
+    @Autowired
+    AuthUserService authUserService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("aakash")
-                .password("123456")
-                .roles("User")
-                .and()
-                .withUser("aditya")
-                .password("1234")
-                .roles("Admin");
-    }
-
-    @Bean
-    public PasswordEncoder getPasswordEncoder()
-    {
-        return NoOpPasswordEncoder.getInstance();
+        auth.userDetailsService(authUserService);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/admin/**").hasRole("Admin")
-                .antMatchers("/user/**").hasAnyRole("User","Admin")
+                .antMatchers("/admin").hasAuthority("Admin")
+                .antMatchers("/user").hasAnyAuthority("Admin", "User")
                 .antMatchers("/").permitAll()
-
-
                 .and().formLogin();
+    }
+
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return NoOpPasswordEncoder.getInstance();
     }
 }
